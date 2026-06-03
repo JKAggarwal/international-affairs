@@ -1,16 +1,16 @@
 // Use the local API during development, and the deployed API in production.
 // Override at any time by setting window.API_BASE before this script loads.
+// Production API on Render until api.internationalaffairs.org.uk DNS is live;
+// then you can switch PRODUCTION_API to 'https://api.internationalaffairs.org.uk/api'.
+const PRODUCTION_API = 'https://international-affairs-api.onrender.com/api';
+
 const API_BASE = (function () {
     if (window.API_BASE) return window.API_BASE;
     const host = window.location.hostname;
     if (host === 'localhost' || host === '127.0.0.1' || host === '') {
         return 'http://localhost:8000/api';
     }
-    // Netlify preview URL before custom api.* DNS is live
-    if (host.endsWith('.netlify.app')) {
-        return 'https://international-affairs-api.onrender.com/api';
-    }
-    return 'https://api.internationalaffairs.org.uk/api';
+    return PRODUCTION_API;
 })();
 const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // backend fetches every 6h; poll lightly to pick up new data
 let currentTopic = 'all';
@@ -184,7 +184,9 @@ async function loadGroupedStories(topic = 'all') {
         if (!res.ok) throw new Error('API not available');
         renderGroupedStories(container, await res.json());
     } catch (err) {
-        container.innerHTML = errorBox('Could not reach the API. Make sure the backend is running on port 8000.');
+        container.innerHTML = errorBox(
+            'Could not reach the API. The backend may be waking up (wait 30s and refresh), or CORS/deploy settings need updating.'
+        );
     }
 }
 
