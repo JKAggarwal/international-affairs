@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://internationalaffairs.org.uk/sitemap.xml
