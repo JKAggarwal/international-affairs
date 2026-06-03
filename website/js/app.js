@@ -1,8 +1,6 @@
 // Use the local API during development, and the deployed API in production.
 // Override at any time by setting window.API_BASE before this script loads.
-// Production API on Render until api.internationalaffairs.org.uk DNS is live;
-// then you can switch PRODUCTION_API to 'https://api.internationalaffairs.org.uk/api'.
-const PRODUCTION_API = 'https://international-affairs-api.onrender.com/api';
+const PRODUCTION_API = 'https://api.internationalaffairs.org.uk/api';
 
 const API_BASE = (function () {
     if (window.API_BASE) return window.API_BASE;
