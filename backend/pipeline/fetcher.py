@@ -8,6 +8,7 @@ from typing import Dict, List, Optional
 
 from bs4 import BeautifulSoup
 
+import re
 import sys
 sys.path.append('..')
 
@@ -26,6 +27,19 @@ TOPIC_KEYWORDS = {
     "climate": ["climate", "carbon", "emissions", "renewable", "energy", "paris agreement", "environmental", "sustainability", "oil", "gas", "fossil", "pipeline"],
 }
 
+# "UK" is a geographic tag that overlaps the thematic topics above (a UK trade
+# story is both "trade" and "uk"). Matched with word boundaries so "uk" doesn't
+# fire inside words like "Ukraine". Detected separately and appended as an extra
+# topic rather than replacing the thematic one.
+UK_KEYWORDS = [
+    "uk", "u.k.", "britain", "british", "united kingdom", "westminster",
+    "downing street", "whitehall", "house of commons", "house of lords",
+    "rishi sunak", "keir starmer", "starmer", "labour party", "tory", "tories",
+    "conservative party", "brexit", "bank of england", "scotland", "scottish",
+    "wales", "welsh", "northern ireland", "england", "nhs", "gchq", "hmrc",
+]
+UK_RE = re.compile(r"\b(" + "|".join(re.escape(k) for k in UK_KEYWORDS) + r")\b")
+
 # Content that isn't international affairs. If any of these appear and the
 # article doesn't otherwise score, it's dropped (classified "general").
 EXCLUDE_KEYWORDS = [
@@ -38,7 +52,12 @@ EXCLUDE_KEYWORDS = [
 
 
 def classify_topic(text: str) -> str:
-    """Classify an article's topic based on keyword frequency."""
+    """Classify an article into one or more topics.
+
+    Returns a comma-separated list (primary topic first). A story can overlap
+    several themes, e.g. "trade,economy" or "security,uk". "uk" is appended as
+    an extra geographic tag and is never the primary unless nothing else matches.
+    """
     text_lower = text.lower()
 
     affairs_score = {}
@@ -47,14 +66,44 @@ def classify_topic(text: str) -> str:
         if score > 0:
             affairs_score[topic] = score
 
+    is_uk = bool(UK_RE.search(text_lower))
+
     # Drop sports/entertainment unless there's a strong affairs signal.
     if any(kw in text_lower for kw in EXCLUDE_KEYWORDS):
         if not affairs_score or max(affairs_score.values()) < 2:
             return "general"
 
-    if affairs_score:
-        return max(affairs_score, key=affairs_score.get)
-    return "general"
+    if not affairs_score:
+        return "uk" if is_uk else "general"
+
+    primary = max(affairs_score, key=affairs_score.get)
+    # Include secondary themes only when they have a real signal (score >= 2)
+    # to avoid tagging on a single stray keyword.
+    secondary = sorted(
+        (t for t, s in affairs_score.items() if t != primary and s >= 2),
+        key=lambda t: affairs_score[t], reverse=True,
+    )
+    topics = [primary] + secondary
+    if is_uk:
+        topics.append("uk")
+    return ",".join(topics)
+
+
+def primary_topic(topic_str: Optional[str]) -> str:
+    """First (primary) topic of a possibly comma-separated topic string."""
+    return (topic_str or "general").split(",")[0]
+
+
+def merge_topics(topic_strings: List[str]) -> str:
+    """Union member topics into one ordered comma list (primary first)."""
+    ordered: List[str] = []
+    for ts in topic_strings:
+        for t in (ts or "").split(","):
+            t = t.strip()
+            if t and t not in ordered:
+                ordered.append(t)
+    meaningful = [t for t in ordered if t != "general"]
+    return ",".join(meaningful) if meaningful else "general"
 
 
 def clean_html(text: str) -> str:
@@ -210,7 +259,9 @@ def recluster(db: Session, full: bool = False, window_hours: int = 72) -> int:
 
         story = StoryCluster(
             title=_choose_title(members),
-            topic=cluster.topic or "general",
+            # Union of member topics so a story shows under every theme it
+            # touches (e.g. a UK trade story appears under both Trade and UK).
+            topic=merge_topics([m.topic for m in members]) or "general",
             created_at=max(_effective_date(m) for m in members),
         )
         story.articles = members

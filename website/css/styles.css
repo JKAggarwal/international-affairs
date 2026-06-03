@@ -460,7 +460,14 @@ li.muted {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     margin-bottom: 12px;
+}
+
+.story-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 .story-topic {

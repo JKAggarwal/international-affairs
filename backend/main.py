@@ -204,6 +204,7 @@ async def fetch_news(
     background_tasks: BackgroundTasks,
     x_fetch_token: Optional[str] = Header(default=None),
     token: Optional[str] = None,
+    full: bool = False,
 ):
     """
     Trigger the news fetching pipeline (runs in background).
@@ -211,12 +212,19 @@ async def fetch_news(
     If FETCH_TOKEN is configured, the caller must supply it via the
     `X-Fetch-Token` header or `?token=` query param. This stops the public
     internet from triggering the (LLM-billed) pipeline on your deployment.
+
+    Pass `?full=true` to rebuild and re-classify every story (applies new
+    topic rules, e.g. UK tagging, across all history). This is heavier and
+    uses more LLM calls, so use it sparingly.
     """
     if FETCH_TOKEN and FETCH_TOKEN not in (x_fetch_token, token):
         raise HTTPException(status_code=401, detail="Invalid or missing fetch token")
 
-    background_tasks.add_task(_run_pipeline_task)
-    return {"message": "News fetch started in background"}
+    background_tasks.add_task(_run_pipeline_task, full)
+    return {
+        "message": "News fetch started in background"
+        + (" (full rebuild)" if full else "")
+    }
 
 
 @app.get("/api/search", response_model=List[SearchResult])
@@ -268,6 +276,7 @@ async def get_topics():
             {"id": "economy", "name": "Economy", "description": "Global economics and finance"},
             {"id": "security", "name": "Security", "description": "Defence and military affairs"},
             {"id": "climate", "name": "Climate", "description": "Climate policy and energy"},
+            {"id": "uk", "name": "UK", "description": "United Kingdom news and politics"},
         ]
     }
 

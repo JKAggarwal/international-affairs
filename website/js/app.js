@@ -226,7 +226,7 @@ function renderStoryCard(story) {
     return `
         <article class="story-card" data-topic="${escapeHtml(story.topic)}">
             <div class="story-header">
-                <span class="story-topic">${escapeHtml(capitalise(story.topic))}</span>
+                <span class="story-topics">${renderTopicTags(story)}</span>
                 <span class="story-time">${escapeHtml(story.time_ago)}</span>
             </div>
             <h3 class="story-title">
@@ -509,6 +509,21 @@ function toggle(id, show) {
 function capitalise(str) {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Display label for a topic token ("uk" -> "UK", others capitalised).
+function topicLabel(topic) {
+    if (!topic) return '';
+    return topic.toLowerCase() === 'uk' ? 'UK' : capitalise(topic);
+}
+
+// Render one or more topic tags for a story card.
+function renderTopicTags(story) {
+    const topics = (story.topics && story.topics.length) ? story.topics : [story.topic];
+    return topics
+        .filter(t => t && t !== 'general')
+        .map(t => `<span class="story-topic">${escapeHtml(topicLabel(t))}</span>`)
+        .join('');
 }
 
 function truncate(str, length) {

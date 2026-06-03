@@ -16,6 +16,11 @@ from typing import Dict, List, Optional, Set
 from . import nlp
 
 
+def _primary(topic: Optional[str]) -> str:
+    """First (primary) topic of a possibly comma-separated topic string."""
+    return (topic or "general").split(",")[0]
+
+
 @dataclass
 class ArticleLike:
     id: int
@@ -93,8 +98,10 @@ def cluster_articles(items: List[ArticleLike]) -> List[Cluster]:
         best_score = 0.0
 
         for cluster in clusters:
-            # Same story => same topic. Strict match avoids cross-topic blobs.
-            if cluster.topic != article.topic:
+            # Same story => same primary topic. Compare the primary (first)
+            # topic so multi-topic tags (e.g. "security,uk") still merge with
+            # same-theme articles while avoiding cross-topic blobs.
+            if _primary(cluster.topic) != _primary(article.topic):
                 continue
 
             sim = nlp.cosine_similarity(vector, cluster.centroid)

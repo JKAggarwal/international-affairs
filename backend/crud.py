@@ -15,6 +15,21 @@ NO_RIGHT = "No right-leaning sources have covered this story yet."
 NO_CENTRE = "Factual reporting from neutral sources"
 
 
+def topic_tokens(topic_str: Optional[str]) -> List[str]:
+    """Split a possibly comma-separated topic string into its tokens."""
+    return [t for t in (topic_str or "").split(",") if t]
+
+
+def primary_topic(topic_str: Optional[str]) -> str:
+    """First (primary) topic, used for the single tag shown on a card."""
+    return topic_tokens(topic_str)[0] if topic_tokens(topic_str) else "general"
+
+
+def topic_matches(cluster_topic: Optional[str], wanted: str) -> bool:
+    """True if a (multi-)topic story belongs to the requested topic filter."""
+    return wanted in topic_tokens(cluster_topic)
+
+
 def get_time_ago(dt: datetime) -> str:
     if not dt:
         return "Recently"
@@ -52,12 +67,12 @@ def get_sources(db: Session, bias: Optional[str] = None) -> List[SourceResponse]
 
 def get_stories(db: Session, topic: Optional[str] = None, limit: int = 20) -> List[StoryListItem]:
     query = db.query(StoryCluster).order_by(desc(StoryCluster.created_at))
-    
+
+    clusters = query.all()
     if topic and topic != "all":
-        query = query.filter(StoryCluster.topic == topic)
-    
-    clusters = query.limit(limit).all()
-    
+        clusters = [c for c in clusters if topic_matches(c.topic, topic)]
+    clusters = clusters[:limit]
+
     stories = []
     for cluster in clusters:
         articles = cluster.articles
@@ -80,7 +95,8 @@ def _story_list_item(cluster, articles, left_articles, centre_articles, right_ar
     return StoryListItem(
         id=cluster.id,
         title=cluster.title,
-        topic=cluster.topic or "General",
+        topic=primary_topic(cluster.topic),
+        topics=topic_tokens(cluster.topic),
         neutral_summary=(comparison.neutral_summary if comparison else None) or cluster.neutral_summary,
         time_ago=get_time_ago(cluster.created_at),
         article_count=len(articles),
@@ -126,7 +142,8 @@ def get_story_detail(db: Session, story_id: int) -> Optional[StoryDetail]:
     return StoryDetail(
         id=cluster.id,
         title=cluster.title,
-        topic=cluster.topic or "General",
+        topic=primary_topic(cluster.topic),
+        topics=topic_tokens(cluster.topic),
         time_ago=get_time_ago(cluster.created_at),
         article_count=len(articles),
         comparison=comparison_response,
@@ -162,12 +179,11 @@ def get_stories_grouped(db: Session, topic: Optional[str] = None) -> dict:
     from datetime import date
     
     query = db.query(StoryCluster).order_by(desc(StoryCluster.created_at))
-    
-    if topic and topic != "all":
-        query = query.filter(StoryCluster.topic == topic)
-    
+
     clusters = query.all()
-    
+    if topic and topic != "all":
+        clusters = [c for c in clusters if topic_matches(c.topic, topic)]
+
     today = date.today()
     april_6 = date(2026, 4, 6)
     
@@ -250,7 +266,7 @@ def search(db: Session, query: str, limit: int = 20) -> List[SearchResult]:
             type="story",
             id=c.id,
             title=c.title,
-            topic=c.topic,
+            topic=primary_topic(c.topic),
             snippet=(c.neutral_summary or "")[:160] or None,
             time_ago=get_time_ago(c.created_at),
         ))
@@ -269,7 +285,7 @@ def search(db: Session, query: str, limit: int = 20) -> List[SearchResult]:
                 type="article",
                 id=a.id,
                 title=a.title,
-                topic=a.topic,
+                topic=primary_topic(a.topic),
                 snippet=(a.summary or "")[:160] or None,
                 source_name=a.source.name,
                 source_bias=a.source.bias_category,
@@ -313,7 +329,7 @@ def get_daily_briefing(db: Session) -> DailyBriefing:
         items.append(BriefingItem(
             id=c.id,
             title=c.title,
-            topic=c.topic or "general",
+            topic=primary_topic(c.topic),
             neutral_summary=c.neutral_summary,
             left_count=left,
             right_count=right,
@@ -329,7 +345,9 @@ def get_daily_briefing(db: Session) -> DailyBriefing:
 
     consensus = [c.title for c, agr, dis in sorted(both_sided, key=lambda t: -t[1])[:3]]
     most_divisive = [c.title for c, agr, dis in sorted(both_sided, key=lambda t: -t[2])[:3]]
-    topics = sorted({i.topic for i in items if i.topic and i.topic != "general"})
+    topics = sorted({
+        tok for c in clusters for tok in topic_tokens(c.topic) if tok != "general"
+    })
 
     return DailyBriefing(
         date=day.strftime("%B %d, %Y"),

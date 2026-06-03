@@ -60,6 +60,7 @@ class StoryListItem(BaseModel):
     id: int
     title: str
     topic: str
+    topics: List[str] = []
     neutral_summary: Optional[str] = None
     time_ago: str
     article_count: int
@@ -76,6 +77,7 @@ class StoryDetail(BaseModel):
     id: int
     title: str
     topic: str
+    topics: List[str] = []
     time_ago: str
     article_count: int
     comparison: ComparisonResponse
