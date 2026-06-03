@@ -36,11 +36,24 @@ FETCH_ON_STARTUP = os.getenv("FETCH_ON_STARTUP", "auto").lower()
 
 scheduler = BackgroundScheduler()
 
+def _run_pipeline_task(full_recluster: bool = False):
+    """Run fetch pipeline with flushed logs (Render buffers stdout otherwise)."""
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{ts}] News pipeline started (full_recluster={full_recluster})", flush=True)
+    try:
+        from pipeline.fetcher import run_pipeline
+        run_pipeline(full_recluster=full_recluster)
+        done = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"[{done}] News pipeline finished OK", flush=True)
+    except Exception as e:  # noqa: BLE001
+        failed = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"[{failed}] News pipeline FAILED: {e}", flush=True)
+        raise
+
+
 def scheduled_fetch(full_recluster: bool = False):
     """Run the news fetch pipeline on schedule."""
-    print(f"\n[{datetime.now().strftime('%H:%M:%S')}] Running scheduled news fetch...")
-    from pipeline.fetcher import run_pipeline
-    run_pipeline(full_recluster=full_recluster)
+    _run_pipeline_task(full_recluster=full_recluster)
 
 
 def _needs_full_rebuild(db) -> bool:
@@ -200,8 +213,7 @@ async def fetch_news(
     if FETCH_TOKEN and FETCH_TOKEN not in (x_fetch_token, token):
         raise HTTPException(status_code=401, detail="Invalid or missing fetch token")
 
-    from pipeline.fetcher import run_pipeline
-    background_tasks.add_task(run_pipeline)
+    background_tasks.add_task(_run_pipeline_task)
     return {"message": "News fetch started in background"}
 
 

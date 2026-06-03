@@ -85,6 +85,7 @@ Tables are created automatically on first boot; no manual schema setup.
    | `ENABLE_SCHEDULER` | `false` |
    | `FETCH_ON_STARTUP` | `auto` |
    | `FETCH_TOKEN` | *(a long random string — see below)* |
+   | `PYTHONUNBUFFERED` | `1` *(so pipeline logs appear in Render immediately)* |
 
    Generate a token locally:
    ```bash
@@ -105,11 +106,11 @@ In Render → your service → **Settings → Custom Domains**, add `api.interna
 ## Step 4 — Deploy the frontend (Netlify)
 
 1. Netlify → **Add new site → Import from Git** → pick your repo.
-2. Build settings:
-   - **Base directory:** `website`
+2. Build settings (or leave defaults — `netlify.toml` in the repo sets this):
+   - **Base directory:** *(leave empty)*
    - **Build command:** *(leave empty — it's static)*
    - **Publish directory:** `website`
-3. Deploy. You'll get a URL like `https://your-site-name.netlify.app`.
+3. Deploy. You'll get a URL like `https://your-site-name.netlify.app`. Stories should load there immediately (preview uses the Render API URL until `api.` DNS is live).
 4. The frontend already targets `https://api.internationalaffairs.org.uk/api` automatically when not on localhost (see `website/js/app.js`), so no code change is needed once DNS is set.
 
 ### Custom domain for the site

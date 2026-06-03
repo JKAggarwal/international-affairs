@@ -238,9 +238,9 @@ def recluster(db: Session, full: bool = False, window_hours: int = 72) -> int:
 
 def run_pipeline(full_recluster: bool = False):
     """Fetch from all active sources, then (re)cluster and analyse."""
-    print("\n" + "=" * 50)
-    print("Starting news fetch pipeline...")
-    print("=" * 50)
+    print("\n" + "=" * 50, flush=True)
+    print("Starting news fetch pipeline...", flush=True)
+    print("=" * 50, flush=True)
 
     db = SessionLocal()
     try:
@@ -252,17 +252,17 @@ def run_pipeline(full_recluster: bool = False):
             all_articles.extend(fetch_source_articles(source))
 
         saved = save_articles(db, all_articles)
-        print(f"\nSaved {saved} new articles")
+        print(f"\nSaved {saved} new articles", flush=True)
 
-        print("\nClustering stories and generating comparisons...")
+        print("\nClustering stories and generating comparisons...", flush=True)
         created = recluster(db, full=full_recluster)
-        print(f"Built {created} story clusters")
+        print(f"Built {created} story clusters", flush=True)
 
-        print("\n" + "=" * 50)
-        print("Pipeline complete!")
-        print("=" * 50 + "\n")
+        print("\n" + "=" * 50, flush=True)
+        print("Pipeline complete!", flush=True)
+        print("=" * 50 + "\n", flush=True)
     except Exception as e:  # noqa: BLE001
-        print(f"Pipeline error: {e}")
+        print(f"Pipeline error: {e}", flush=True)
         raise
     finally:
         db.close()

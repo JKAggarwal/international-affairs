@@ -6,6 +6,10 @@ const API_BASE = (function () {
     if (host === 'localhost' || host === '127.0.0.1' || host === '') {
         return 'http://localhost:8000/api';
     }
+    // Netlify preview URL before custom api.* DNS is live
+    if (host.endsWith('.netlify.app')) {
+        return 'https://international-affairs-api.onrender.com/api';
+    }
     return 'https://api.internationalaffairs.org.uk/api';
 })();
 const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // backend fetches every 6h; poll lightly to pick up new data
