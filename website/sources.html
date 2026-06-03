@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Sources - International Affairs</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">
+                    <img src="logo.jpeg" alt="International Affairs" class="logo-img">
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Stories</a></li>
+                    <li><a href="sources.html" class="active">Sources</a></li>
+                    <li><a href="about.html">About</a></li>
+                </ul>
+                <a href="index.html#newsletter" class="btn btn-primary">Subscribe</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="sources-page">
+        <div class="container">
+            <h1 class="section-title">Our Sources</h1>
+            
+            <div class="sources-intro">
+                <p>We aggregate news from a curated selection of established publications across the political spectrum. Each source is rated based on their editorial stance, coverage patterns, and framing tendencies. Our ratings draw on research from media bias organisations and our own analysis.</p>
+            </div>
+
+            <div class="topics-bar" style="position: static; border: none; padding: 0; margin-bottom: 32px;">
+                <div class="topics">
+                    <button class="topic-btn active" data-bias="all">All Sources</button>
+                    <button class="topic-btn" data-bias="left">Left</button>
+                    <button class="topic-btn" data-bias="centre">Centre</button>
+                    <button class="topic-btn" data-bias="right">Right</button>
+                </div>
+            </div>
+            
+            <div class="sources-grid">
+                <div class="source-card" data-bias="left">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>The Guardian</h3>
+                            <p class="source-card-country">United Kingdom</p>
+                        </div>
+                        <span class="source-bias left">Left</span>
+                    </div>
+                    <p class="source-card-description">British daily newspaper known for progressive editorial stance and extensive international coverage.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot active left"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-label">Left</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="left">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>Al Jazeera</h3>
+                            <p class="source-card-country">Qatar</p>
+                        </div>
+                        <span class="source-bias left">Left</span>
+                    </div>
+                    <p class="source-card-description">International news network offering perspectives often underrepresented in Western media.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot active left"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-label">Left</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="left">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>The Atlantic</h3>
+                            <p class="source-card-country">United States</p>
+                        </div>
+                        <span class="source-bias left">Centre-Left</span>
+                    </div>
+                    <p class="source-card-description">American magazine covering politics, foreign affairs, and culture with in-depth analysis.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot active centre-left"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-label">Centre-Left</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="left">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>New York Times</h3>
+                            <p class="source-card-country">United States</p>
+                        </div>
+                        <span class="source-bias left">Centre-Left</span>
+                    </div>
+                    <p class="source-card-description">Leading American newspaper with extensive foreign bureaux and international reporting.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot active centre-left"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-label">Centre-Left</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="centre">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>Reuters</h3>
+                            <p class="source-card-country">United Kingdom</p>
+                        </div>
+                        <span class="source-bias centre">Centre</span>
+                    </div>
+                    <p class="source-card-description">International wire service known for factual, neutral reporting and global coverage.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot active centre"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-label">Centre</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="centre">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>Associated Press</h3>
+                            <p class="source-card-country">United States</p>
+                        </div>
+                        <span class="source-bias centre">Centre</span>
+                    </div>
+                    <p class="source-card-description">Non-profit news agency providing factual coverage to media organisations worldwide.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot active centre"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-label">Centre</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="centre">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>Financial Times</h3>
+                            <p class="source-card-country">United Kingdom</p>
+                        </div>
+                        <span class="source-bias centre">Centre</span>
+                    </div>
+                    <p class="source-card-description">Business newspaper with strong international coverage and economically-focused analysis.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot active centre"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-label">Centre</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="centre">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>The Economist</h3>
+                            <p class="source-card-country">United Kingdom</p>
+                        </div>
+                        <span class="source-bias centre">Centre</span>
+                    </div>
+                    <p class="source-card-description">Weekly magazine covering international affairs, politics, and economics with classical liberal perspective.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot active centre"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-label">Centre</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="right">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>Wall Street Journal</h3>
+                            <p class="source-card-country">United States</p>
+                        </div>
+                        <span class="source-bias right">Centre-Right</span>
+                    </div>
+                    <p class="source-card-description">American business newspaper with conservative editorial page and extensive global coverage.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot active centre-right"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-label">Centre-Right</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="right">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>The Telegraph</h3>
+                            <p class="source-card-country">United Kingdom</p>
+                        </div>
+                        <span class="source-bias right">Right</span>
+                    </div>
+                    <p class="source-card-description">British broadsheet with conservative editorial stance and strong foreign affairs section.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot active right"></span>
+                        <span class="bias-label">Right</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="right">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>National Review</h3>
+                            <p class="source-card-country">United States</p>
+                        </div>
+                        <span class="source-bias right">Right</span>
+                    </div>
+                    <p class="source-card-description">American conservative magazine covering politics and international affairs from a traditionalist perspective.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot active right"></span>
+                        <span class="bias-label">Right</span>
+                    </div>
+                </div>
+
+                <div class="source-card" data-bias="right">
+                    <div class="source-card-header">
+                        <div>
+                            <h3>The Spectator</h3>
+                            <p class="source-card-country">United Kingdom</p>
+                        </div>
+                        <span class="source-bias right">Right</span>
+                    </div>
+                    <p class="source-card-description">British weekly magazine with conservative editorial stance and commentary on global affairs.</p>
+                    <div class="bias-indicator">
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot"></span>
+                        <span class="bias-dot active right"></span>
+                        <span class="bias-label">Right</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="newsletter" id="newsletter">
+        <div class="container">
+            <div class="newsletter-content">
+                <h2>Get the Daily Briefing</h2>
+                <p>A balanced summary of international affairs delivered to your inbox every morning.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Enter your email" required>
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="logo.jpeg" alt="International Affairs" class="footer-logo">
+                    <p>Understanding global news from all perspectives.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="index.html">Stories</a></li>
+                        <li><a href="sources.html">Sources</a></li>
+                        <li><a href="about.html">About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Topics</h4>
+                    <ul>
+                        <li><a href="#">Trade</a></li>
+                        <li><a href="#">Geopolitics</a></li>
+                        <li><a href="#">Economy</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 International Affairs. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
