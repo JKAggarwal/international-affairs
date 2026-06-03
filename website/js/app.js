@@ -240,11 +240,6 @@ function renderStoryCard(story) {
                     <p>${escapeHtml(truncate(story.left_perspective.summary, 110))}</p>
                     <span class="source-count">${story.left_perspective.source_count} sources</span>
                 </div>
-                <div class="perspective perspective-centre">
-                    <span class="perspective-label">Centre</span>
-                    <p>${escapeHtml(truncate(story.centre_perspective.summary, 110))}</p>
-                    <span class="source-count">${story.centre_perspective.source_count} sources</span>
-                </div>
                 <div class="perspective perspective-right">
                     <span class="perspective-label">Right</span>
                     <p>${escapeHtml(truncate(story.right_perspective.summary, 110))}</p>

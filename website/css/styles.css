@@ -505,7 +505,7 @@ li.muted {
 /* Perspectives */
 .perspectives {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin-bottom: 20px;
 }
@@ -1197,7 +1197,7 @@ li.muted {
 
 .skeleton-perspectives {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-top: 18px;
 }
