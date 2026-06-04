@@ -178,7 +178,6 @@ function renderGroupedStories(container, data) {
             <div class="stories-meta">
                 <span class="total-count">${data.total_stories} stories</span>
                 <span class="last-updated">Updated ${formatTime(data.last_updated)}</span>
-                <button onclick="fetchNews(this)" class="btn btn-secondary btn-sm">Refresh Now</button>
             </div>
         </div>`;
 
