@@ -444,11 +444,16 @@ function renderSources(grid, sources) {
         ).join('');
 
         return `
-            <div class="source-card" data-bias="${getBiasGroup(source.bias_category)}">
+            <a href="${escapeHtml(source.url)}" target="_blank" rel="noopener"
+               class="source-card" data-bias="${getBiasGroup(source.bias_category)}">
                 <div class="source-card-header">
-                    <div>
-                        <h3>${escapeHtml(source.name)}</h3>
-                        <p class="source-card-country">${escapeHtml(source.country || '')}</p>
+                    <div class="source-card-title">
+                        <img class="source-card-logo" src="${faviconFor(source.url)}" alt="" loading="lazy"
+                             onerror="this.classList.add('source-logo-fallback');this.removeAttribute('src');">
+                        <div>
+                            <h3>${escapeHtml(source.name)}</h3>
+                            <p class="source-card-country">${escapeHtml(source.country || '')}</p>
+                        </div>
                     </div>
                     <span class="source-bias ${getBiasGroup(source.bias_category)}">${escapeHtml(capitalise(source.bias_category))}</span>
                 </div>
@@ -457,7 +462,7 @@ function renderSources(grid, sources) {
                     ${dots}
                     <span class="bias-label">${escapeHtml(capitalise(source.bias_category))}</span>
                 </div>
-            </div>`;
+            </a>`;
     }).join('');
     animateCards();
 }

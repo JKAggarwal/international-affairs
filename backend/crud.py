@@ -216,7 +216,13 @@ def get_stories_grouped(db: Session, topic: Optional[str] = None) -> dict:
             groups["this_month"].append(story)
         else:
             groups["older"].append(story)
-    
+
+    # Within each period, show the most-covered stories first. Sorting is
+    # stable, so stories with the same source count keep their newest-first
+    # (created_at desc) order from the query above.
+    for key in groups:
+        groups[key].sort(key=lambda s: s.article_count, reverse=True)
+
     return {
         "sections": [
             {"title": "Today's Stories", "key": "today", "stories": groups["today"]},
