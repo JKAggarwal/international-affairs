@@ -123,14 +123,6 @@ function renderBriefing(container, b) {
             </span>
         </li>`).join('');
 
-    const consensus = b.consensus.length
-        ? b.consensus.map(t => `<li>${escapeHtml(t)}</li>`).join('')
-        : '<li class="muted">No clear consensus stories today</li>';
-
-    const divisive = b.most_divisive.length
-        ? b.most_divisive.map(t => `<li>${escapeHtml(t)}</li>`).join('')
-        : '<li class="muted">No sharply divided stories today</li>';
-
     const topics = b.topics_covered.map(t => `<span class="briefing-topic">${escapeHtml(capitalise(t))}</span>`).join('');
 
     container.innerHTML = `
@@ -142,17 +134,9 @@ function renderBriefing(container, b) {
                 </div>
                 <div class="briefing-topics">${topics}</div>
             </div>
-            <div class="briefing-grid">
-                <div class="briefing-col">
-                    <h4>Top Stories</h4>
-                    <ul class="briefing-stories">${topStories}</ul>
-                </div>
-                <div class="briefing-col">
-                    <h4>Where Left &amp; Right Agree</h4>
-                    <ul class="briefing-list">${consensus}</ul>
-                    <h4>Most Divisive</h4>
-                    <ul class="briefing-list">${divisive}</ul>
-                </div>
+            <div class="briefing-full">
+                <h4>Top Stories</h4>
+                <ul class="briefing-stories">${topStories}</ul>
             </div>
         </div>`;
 }
