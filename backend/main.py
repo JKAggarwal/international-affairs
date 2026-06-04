@@ -57,10 +57,17 @@ def scheduled_fetch(full_recluster: bool = False):
 
 
 def _needs_full_rebuild(db) -> bool:
-    """Detect legacy per-topic clusters (huge article counts) that need rebuilding."""
+    """Detect legacy per-topic clusters (huge article counts) that need rebuilding.
+
+    Old per-topic clustering lumped every article of a topic together, producing
+    clusters with hundreds of articles. Genuine per-story clusters stay small,
+    but with a large source pool a popular story can still gather 30+ articles,
+    so the threshold must sit well above any realistic single-story cluster to
+    avoid wiping the database on every restart.
+    """
     from models import StoryCluster
     for cluster in db.query(StoryCluster).all():
-        if len(cluster.articles) > 15:
+        if len(cluster.articles) > 60:
             return True
     return False
 
