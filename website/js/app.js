@@ -330,19 +330,81 @@ function renderStoryDetail(story) {
 
     const sourceList = document.getElementById('source-list');
     if (sourceList) {
-        sourceList.innerHTML = story.articles.map(a => `
-            <a href="${escapeHtml(a.url)}" target="_blank" rel="noopener" class="source-item">
-                <div class="source-info">
-                    <div class="source-name">${escapeHtml(a.source_name)}</div>
-                    <div class="source-headline">“${escapeHtml(truncate(a.title, 90))}”</div>
-                </div>
-                <span class="source-bias ${getBiasGroup(a.source_bias)}">${escapeHtml(capitalise(a.source_bias))}</span>
-            </a>`).join('');
+        sourceList.innerHTML = renderSourceBreakdown(story.articles);
     }
     setText('source-count-label', `(${story.article_count})`);
 
     toggle('story-loading', false);
     toggle('story-content', true);
+}
+
+// Group all articles by lean and render a coverage bar + grouped source lists.
+function renderSourceBreakdown(articles) {
+    const groups = { left: [], centre: [], right: [] };
+    (articles || []).forEach(a => {
+        groups[getBiasGroup(a.source_bias)].push(a);
+    });
+
+    const total = (articles || []).length || 1;
+    const pct = n => Math.round((n / total) * 100);
+    const order = [
+        { key: 'left', label: 'Left' },
+        { key: 'centre', label: 'Centre' },
+        { key: 'right', label: 'Right' },
+    ];
+
+    const bar = order.map(g => {
+        const w = (groups[g.key].length / total) * 100;
+        return w > 0
+            ? `<span class="coverage-seg seg-${g.key}" style="width:${w}%" title="${g.label}: ${groups[g.key].length} of ${total}"></span>`
+            : '';
+    }).join('');
+
+    const legend = order.map(g =>
+        `<span class="coverage-legend-item">
+            <span class="dot dot-${g.key}"></span>${g.label}
+            <strong>${pct(groups[g.key].length)}%</strong>
+            <span class="coverage-legend-count">${groups[g.key].length}</span>
+        </span>`
+    ).join('');
+
+    const columns = order.map(g => {
+        if (!groups[g.key].length) return '';
+        const items = groups[g.key].map(a => `
+            <a href="${escapeHtml(a.url)}" target="_blank" rel="noopener" class="source-item">
+                <img class="source-logo" src="${faviconFor(a.url)}" alt="" loading="lazy"
+                     onerror="this.classList.add('source-logo-fallback');this.removeAttribute('src');">
+                <div class="source-info">
+                    <div class="source-name">${escapeHtml(a.source_name)}</div>
+                    <div class="source-headline">“${escapeHtml(truncate(a.title, 90))}”</div>
+                </div>
+            </a>`).join('');
+        return `
+            <div class="source-group">
+                <h3 class="source-group-head">
+                    <span class="dot dot-${g.key}"></span>${g.label}
+                    <span class="source-group-count">${groups[g.key].length}</span>
+                </h3>
+                <div class="source-group-items">${items}</div>
+            </div>`;
+    }).join('');
+
+    return `
+        <div class="coverage-summary">
+            <div class="coverage-bar">${bar}</div>
+            <div class="coverage-legend">${legend}</div>
+        </div>
+        <div class="source-groups">${columns}</div>`;
+}
+
+// Real source logos without storing them: derive a favicon from the article URL.
+function faviconFor(url) {
+    try {
+        const host = new URL(url).hostname;
+        return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=64`;
+    } catch (e) {
+        return '';
+    }
 }
 
 function showStoryError() {
