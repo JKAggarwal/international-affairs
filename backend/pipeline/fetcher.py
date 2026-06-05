@@ -271,6 +271,12 @@ def recluster(db: Session, full: bool = False, window_hours: int = 72) -> int:
         result = analysis.generate_comparison(cluster.members, source_lookup)
         story.neutral_summary = result.get("neutral_summary")
 
+        # Prefer the LLM's neutral headline; fall back to the representative
+        # outlet headline already set above when the LLM is unavailable.
+        llm_headline = result.get("headline")
+        if llm_headline:
+            story.title = llm_headline
+
         db.add(Comparison(
             cluster_id=story.id,
             neutral_summary=result.get("neutral_summary"),

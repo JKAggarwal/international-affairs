@@ -165,6 +165,9 @@ def heuristic_comparison(
         right_blind.append("Coverage broadly overlaps with the left on this story")
 
     return {
+        # The heuristic mode does not synthesise a headline; the pipeline keeps
+        # the representative outlet headline in that case.
+        "headline": None,
         "neutral_summary": neutral,
         "left_framing": left_framing,
         "right_framing": right_framing,
@@ -174,6 +177,26 @@ def heuristic_comparison(
         "right_blind_spots": right_blind[:4],
         "method": "heuristic",
     }
+
+
+def _clean_headline(value) -> str | None:
+    """Sanitise an LLM-generated headline; return None if unusable.
+
+    Guards against the model returning quoted text, a trailing " - Source"
+    attribution, empty strings, or an over-long paragraph. On any failure the
+    caller falls back to a real outlet headline.
+    """
+    if not isinstance(value, str):
+        return None
+    text = value.strip().strip('"').strip("'").strip()
+    # Drop a trailing source attribution like " - Reuters" or " | BBC News".
+    text = re.split(r"\s+[\u2013\u2014\-|]\s+", text)[0].strip() if " - " in text or " | " in text else text
+    if not text:
+        return None
+    # A neutral headline should be short; reject paragraphs.
+    if len(text) > 120 or len(text.split()) > 18:
+        return None
+    return text
 
 
 def _build_llm_prompt(members: List[ArticleLike], source_lookup: Dict[int, str]) -> str:
@@ -194,10 +217,15 @@ def _build_llm_prompt(members: List[ArticleLike], source_lookup: Dict[int, str])
         + block("LEFT-LEANING SOURCES", left)
         + block("CENTRE SOURCES", centre)
         + block("RIGHT-LEANING SOURCES", right)
-        + "\nReturn ONLY valid JSON with these keys: neutral_summary (string), "
-        "left_framing (string), right_framing (string), agreements (array of "
-        "strings), disagreements (array of strings), left_blind_spots (array of "
-        "strings), right_blind_spots (array of strings). Be balanced and fair."
+        + "\nReturn ONLY valid JSON with these keys: headline (string), "
+        "neutral_summary (string), left_framing (string), right_framing "
+        "(string), agreements (array of strings), disagreements (array of "
+        "strings), left_blind_spots (array of strings), right_blind_spots "
+        "(array of strings). Be balanced and fair.\n"
+        "The headline must be a single, neutral, factual headline of at most 12 "
+        "words that summarises the underlying event without loaded language, "
+        "spin or opinion, and that outlets on both the left and right would "
+        "accept as accurate. Do not use quotation marks or a trailing source name."
     )
 
 
@@ -230,6 +258,8 @@ def llm_comparison(members: List[ArticleLike], source_lookup: Dict[int, str]) ->
     content = response.json()["choices"][0]["message"]["content"]
     data = json.loads(content)
     data["method"] = f"llm:{model}"
+
+    data["headline"] = _clean_headline(data.get("headline"))
 
     # Coerce string fields so a null from the model never breaks serialization.
     for key in ("neutral_summary", "left_framing", "right_framing"):
